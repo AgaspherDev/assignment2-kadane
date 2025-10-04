@@ -183,6 +183,44 @@ public class KadaneAlgorithmTest {
     }
 
     @Nested
+    @DisplayName("Algorithm Comparison Tests")
+    class AlgorithmComparisonTests {
+        
+        @Test
+        @DisplayName("Standard and optimized algorithms should produce same results")
+        void testAlgorithmConsistency() {
+            int[][] testArrays = {
+                {-2, 1, -3, 4, -1, 2, 1, -5, 4},
+                {1, 2, 3, 4, 5},
+                {-5, -2, -8, -1},
+                {0, 0, 0},
+                {-1, 0, -2, 3, 0, -1, 2}
+            };
+            
+            for (int[] array : testArrays) {
+                KadaneAlgorithm.Result standardResult = KadaneAlgorithm.findMaxSubarray(array);
+                KadaneAlgorithm.Result optimizedResult = KadaneAlgorithm.findMaxSubarrayOptimized(array);
+                
+                assertEquals(standardResult.getMaxSum(), optimizedResult.getMaxSum());
+                assertEquals(standardResult.getStartIndex(), optimizedResult.getStartIndex());
+                assertEquals(standardResult.getEndIndex(), optimizedResult.getEndIndex());
+            }
+        }
+        
+        @Test
+        @DisplayName("Optimized algorithm should have fewer or equal operations")
+        void testOptimizedPerformance() {
+            int[] array = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
+            
+            KadaneAlgorithm.Result standardResult = KadaneAlgorithm.findMaxSubarray(array);
+            KadaneAlgorithm.Result optimizedResult = KadaneAlgorithm.findMaxSubarrayOptimized(array);
+            
+            assertTrue(optimizedResult.getMetrics().getComparisons() <= 
+                      standardResult.getMetrics().getComparisons());
+        }
+    }
+
+    @Nested
     @DisplayName("Metrics Tests")
     class MetricsTests {
         

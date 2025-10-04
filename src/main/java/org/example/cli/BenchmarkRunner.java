@@ -23,10 +23,11 @@ public class BenchmarkRunner {
             switch (choice) {
                 case 1 -> testWithCustomArray();
                 case 2 -> testWithRandomArray();
-                case 3 -> runEdgeCaseTests();
-                case 4 -> runComprehensiveBenchmark();
-                case 5 -> viewBenchmarkResults();
-                case 6 -> exportResultsToCsv();
+                case 3 -> performanceComparison();
+                case 4 -> runEdgeCaseTests();
+                case 5 -> runComprehensiveBenchmark();
+                case 6 -> viewBenchmarkResults();
+                case 7 -> exportResultsToCsv();
                 case 10 -> {
                     return;
                 }
@@ -42,10 +43,11 @@ public class BenchmarkRunner {
         System.out.println("Choose an option:");
         System.out.println("1. Test with custom array");
         System.out.println("2. Test with random array");
-        System.out.println("3. Run edge case tests");
-        System.out.println("4. Run comprehensive benchmark");
-        System.out.println("5. View benchmark results");
-        System.out.println("6. Export results to CSV");
+        System.out.println("3. Performance comparison");
+        System.out.println("4. Run edge case tests");
+        System.out.println("5. Run comprehensive benchmark");
+        System.out.println("6. View benchmark results");
+        System.out.println("7. Export results to CSV");
         System.out.println("10. Exit");
         System.out.print("Enter your choice (1-10): ");
     }
@@ -123,7 +125,36 @@ public class BenchmarkRunner {
             System.out.println("Error: " + e.getMessage());
         }
     }
+    
+    private void performanceComparison() {        
+        int[] sizes = {100, 1000, 5000, 10000};
+        
+        tracker.clearResults();
+        
+        for (int size : sizes) {
+            System.out.println("\nArray size: " + size);
+            int[] array = generateRandomArray(size, -100, 100);
+            
+            KadaneAlgorithm.Result standardResult = KadaneAlgorithm.findMaxSubarray(array);
+            long standardTime = PerformanceTracker.measureExecutionTime(() -> {
+                KadaneAlgorithm.findMaxSubarray(array);
+            });
+            tracker.addResult("Standard Kadane", size, standardTime, standardResult.getMetrics(), standardResult.getMaxSum());
 
+            KadaneAlgorithm.Result optimizedResult = KadaneAlgorithm.findMaxSubarrayOptimized(array);
+            long optimizedTime = PerformanceTracker.measureExecutionTime(() -> {
+                KadaneAlgorithm.findMaxSubarrayOptimized(array);
+            });
+            tracker.addResult("Optimized Kadane", size, optimizedTime, optimizedResult.getMetrics(), optimizedResult.getMaxSum());
+            
+            System.out.printf("Standard Algorithm: %d ns%n", standardTime);
+            System.out.printf("Optimized Algorithm: %d ns%n", optimizedTime);
+            System.out.printf("Speedup: %.2fx%n", (double) standardTime / optimizedTime);
+        }
+        
+        tracker.printComparison();
+    }
+    
     private void runEdgeCaseTests() {
         System.out.println("\n--- Edge Case Tests ---");
         
@@ -188,6 +219,12 @@ public class BenchmarkRunner {
                 currentTest++;
                 System.out.printf("Progress: %d/%d - Testing Optimized Algorithm (size=%d, range=[%d,%d])%n", 
                     currentTest, totalTests, size, range[0], range[1]);
+                
+                KadaneAlgorithm.Result optimizedResult = KadaneAlgorithm.findMaxSubarrayOptimized(array);
+                long optimizedTime = PerformanceTracker.measureExecutionTime(() -> {
+                    KadaneAlgorithm.findMaxSubarrayOptimized(array);
+                });
+                tracker.addResult("Optimized", size, optimizedTime, optimizedResult.getMetrics(), optimizedResult.getMaxSum());
             }
         }
         

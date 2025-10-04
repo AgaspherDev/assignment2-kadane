@@ -91,6 +91,64 @@ public class KadaneAlgorithm {
         return result;
     }
     
+    public static Result findMaxSubarrayOptimized(int[] array) {
+        if (array == null) {
+            throw new IllegalArgumentException("Array cannot be null");
+        }
+        
+        if (array.length == 0) {
+            throw new IllegalArgumentException("Array cannot be empty");
+        }
+        
+        PerformanceTracker.Metrics metrics = new PerformanceTracker.Metrics();
+        metrics.incrementMemoryAllocations();
+        
+        int maxSum = array[0];
+        int currentSum = array[0];
+        int startIndex = 0;
+        int endIndex = 0;
+        int tempStart = 0;
+        
+        metrics.incrementArrayAccesses();
+        metrics.incrementArrayAccesses();
+        metrics.incrementAssignments();
+        metrics.incrementAssignments();
+        metrics.incrementAssignments();
+        metrics.incrementAssignments();
+        metrics.incrementAssignments();
+        
+        for (int i = 1; i < array.length; i++) {
+            metrics.incrementComparisons();
+            
+            if (currentSum <= 0) {
+                metrics.incrementComparisons();
+                currentSum = array[i];
+                tempStart = i;
+                metrics.incrementArrayAccesses();
+                metrics.incrementAssignments();
+                metrics.incrementAssignments();
+            } else {
+                currentSum += array[i];
+                metrics.incrementArrayAccesses();
+                metrics.incrementAssignments();
+            }
+            
+            if (currentSum > maxSum) {
+                metrics.incrementComparisons();
+                maxSum = currentSum;
+                startIndex = tempStart;
+                endIndex = i;
+                metrics.incrementAssignments();
+                metrics.incrementAssignments();
+                metrics.incrementAssignments();
+            }
+        }
+        
+        Result result = new Result(maxSum, startIndex, endIndex, metrics);
+        metrics.incrementMemoryAllocations();
+        return result;
+    }
+    
     public static void validateInput(int[] array) {
         if (array == null) {
             throw new IllegalArgumentException("Input array cannot be null");
